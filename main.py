@@ -1,5 +1,5 @@
 from classes.match import Match
-import urllib, json, datetime
+import urllib, json, datetime, re
 
 def grabMatchesDay(date, liveornot):
 	matches = []
@@ -15,13 +15,28 @@ def grabMatchesDay(date, liveornot):
 
 	for i in range(len(programmes)):
 		title = programmes[i]['title']
-		description = programmes[i]['description']
+
+		#Make the description the title if the title doesn't show the teams.
+		pattern = ['-',' v ',' - ']
+		
+		containsit = False
+		for p in pattern:
+			x = re.search(p,title)
+			if x != None:
+				containsit = True
+				break
+			else:
+				containsit = False
+
+		if containsit == False and programmes[i]['description'] != '':
+			title = programmes[i]['description']
+
 		start_time = datetime.datetime.fromtimestamp(programmes[i]['start_unix'])
 		end_time = datetime.datetime.fromtimestamp(programmes[i]['stop_unix'])
 		status = programmes[i]['status']
 		channel = programmes[i]['channel']['name']
 		id_kava = programmes[i]['id']
-		match = Match(title,description,start_time,end_time,status,channel,id_kava)
+		match = Match(title,start_time,end_time,status,channel,id_kava)
 
 		matches.append(match)
 
@@ -35,11 +50,33 @@ def grabMatchesDay(date, liveornot):
 
 	return matches
 
-print 'STARTING!'
+def thisWeekMatches(liveornot):
+	weekMatches = []
 
-result = grabMatchesDay(datetime.datetime.now(),True)
+	today = datetime.datetime.now()
+
+	for i in range(8):
+		daymatches = grabMatchesDay(today + datetime.timedelta(days=i),liveornot)
+		
+		for j in range(len(daymatches)):
+			weekMatches.append(daymatches[j])
+
+	return weekMatches
+
+def onlyIntFootball(matchlist):
+	intMatches = []
+
+	intChannels = ['Setanta Eurasia', 'Eurosport 2 (Bundesliga)', 'Viasat Sport Baltic', 'Eurosport 1', 'Eurosport 2']
+
+	for i in range(len(matchlist)):
+		channel = matchlist[i].channel
+		
+		if channel in intChannels:
+			intMatches.append(matchlist[i])
+
+	return intMatches
+
+result = onlyIntFootball(thisWeekMatches(True))
 
 for i in range(len(result)):
 	print result[i].__str__() + '\n'
-
-
