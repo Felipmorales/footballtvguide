@@ -14,8 +14,6 @@ def grabMatchesDay(date, liveornot):
 
 	programmes = data['schedule']['programme']
 
-	#the most stupid change
-	#is this one
 	for i in range(len(programmes)):
 		title = programmes[i]['title']
 
