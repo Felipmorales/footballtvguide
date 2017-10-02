@@ -1,6 +1,7 @@
 from classes.match import Match
 import urllib, json, datetime, re
 
+#Function that gets the JSON and parses it
 def grabMatchesDay(date, liveornot):
 	matches = []
 
@@ -18,7 +19,6 @@ def grabMatchesDay(date, liveornot):
 
 		#Make the description the title if the title doesn't show the teams.
 		pattern = ['-',' v ',' - ']
-		
 		containsit = False
 		for p in pattern:
 			x = re.search(p,title)
@@ -50,6 +50,7 @@ def grabMatchesDay(date, liveornot):
 
 	return matches
 
+#To get the matches for the week
 def thisWeekMatches(liveornot):
 	weekMatches = []
 
@@ -57,12 +58,12 @@ def thisWeekMatches(liveornot):
 
 	for i in range(8):
 		daymatches = grabMatchesDay(today + datetime.timedelta(days=i),liveornot)
-		
 		for j in range(len(daymatches)):
 			weekMatches.append(daymatches[j])
 
 	return weekMatches
 
+#This is to filter only for the international matches
 def onlyIntFootball(matchlist):
 	intMatches = []
 
@@ -70,7 +71,6 @@ def onlyIntFootball(matchlist):
 
 	for i in range(len(matchlist)):
 		channel = matchlist[i].channel
-		
 		if channel in intChannels:
 			intMatches.append(matchlist[i])
 
